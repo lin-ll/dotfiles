@@ -31,9 +31,18 @@ source ~/bin/git-completion.bash
 # Enable tab completion for `g` by marking it as an alias for `git`
 __git_complete g git
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+function_exists() {
+    declare -f -F $1 > /dev/null
+    return $?
+}
+
+for al in $(git --list-cmds=alias); do
+    alias g$al="git $al"
+
+    complete_func=_git_$(__git_aliased_command $al)
+    function_exists $complete_fnc && __git_complete g$al $complete_func
+done
+
 export NODE_OPTIONS="--max-old-space-size=18432"
 
 export VOLTA_HOME="$HOME/.volta"
@@ -41,4 +50,3 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 
 # Added by Toolbox App
 export PATH="$PATH:/Users/lulin/Library/Application Support/JetBrains/Toolbox/scripts"
-
